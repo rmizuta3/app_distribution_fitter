@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<form action="/upload" method="post" enctype="multipart/form-data">
+  <input type="file" name="csvfile" accept="text/csv">
+  <button type="submit">upload</button>
+</form>
+
+<!--
+<div>
+{% if showcols %}
+  {{ showcols }}
+{% endif %}
+</div>
+-->
+
+{% if showcols %}
+<form class="form-inline" method="POST" action="/selectcol">
+    <p>ファイル名：{{uploadfile}}<p>
+    <p>列を選択してください</p>
+    <select name="datacolumns">
+        <label for="name">使用するデータセットを選択してください</label>
+        {% for i in showcols %}
+        <option value='{{i|e}}'>{{ i|e }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-default">Go</button>
+</form>
+{% endif %}
+
+{% if images %}
+    <div>
+    <img src="/static/{{ images }}">
+    {{ images }}
+    </div>
+{% endif %}   
+
+<!--
+{% if images %}
+  {% for path in images %}
+    <div>
+      <img src="/static/{{ path }}">
+      {{ path }}
+    </div>
+  {% endfor %}
+{% endif %}   
+  -->
+
+{% endblock %}
