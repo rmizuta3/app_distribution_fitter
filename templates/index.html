@@ -6,26 +6,27 @@
   <button type="submit">upload</button>
 </form>
 
-<!--
+{% if showcols %}
 <div>
-{% if showcols %}
-  {{ showcols }}
-{% endif %}
-</div>
--->
+  <form class="form-inline" method="POST" action="/selectcol">
+      <p>ファイル名：{{uploadfile}}<p>
+      <p>列を選択してください</p>
+      <select name="datacolumns">
+          <label for="name">使用するデータセットを選択してください</label>
+          {% for i in showcols %}
+          <option value='{{i|e}}'>{{ i|e }}</option>
+          {% endfor %}
+      </select>
+      <p>使用する分布を選択してください</p>
+      <input type="checkbox" name="dist" value="norm" checked="checked">norm
+      <input type="checkbox" name="dist" value="gamma">gamma
+      <input type="checkbox" name="dist" value="rayleigh">rayleigh
+      <input type="checkbox" name="dist" value="beta">beta
+      <input type="checkbox" name="dist" value="chi2">chi2
 
-{% if showcols %}
-<form class="form-inline" method="POST" action="/selectcol">
-    <p>ファイル名：{{uploadfile}}<p>
-    <p>列を選択してください</p>
-    <select name="datacolumns">
-        <label for="name">使用するデータセットを選択してください</label>
-        {% for i in showcols %}
-        <option value='{{i|e}}'>{{ i|e }}</option>
-        {% endfor %}
-    </select>
-    <button type="submit" class="btn btn-default">Go</button>
-</form>
+      <button type="submit" class="btn btn-default">Go</button>
+  </form>
+</div>
 {% endif %}
 
 {% if images %}
@@ -33,7 +34,13 @@
     <img src="/static/{{ images }}">
     {{ images }}
     </div>
+    <div>
+    {% for table in tables %}
+      {{ table|safe }}
+    {% endfor %}
+    </div>
 {% endif %}   
+
 
 <!--
 {% if images %}

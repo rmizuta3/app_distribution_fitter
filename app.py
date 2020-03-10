@@ -9,19 +9,23 @@ from datetime import datetime
 import matplotlib
 matplotlib.use('Agg') #これを入れないとエラー
 
+#確率分布の辞書作成
+dist_d={}
+dist_d["norm"]=st.norm
+dist_d["gamma"]=st.gamma
+dist_d["rayleigh"]=st.rayleigh
+dist_d["beta"]=st.beta
+dist_d["chi2"]=st.chi2
+
 # 自身の名称を app という名前でインスタンス化する
 app = Flask(__name__)
 
-showcols=[] 
-#uploadfile=[] 
 SAVE_DIR='./static'
 app.config['UPLOAD_FILE'] = ""
+app.config['SELECT_COLS'] = ""
 
-#データはここで読み込んでおく
-#df=pd.read_csv("sampledata/iris.csv") #あとでデータセットを指定したい
+result_table=pd.DataFrame()
 
-# ここからウェブアプリケーション用のルーティングを記述
-# index にアクセスしたときの処理
 @app.route('/')
 def index():
     #showcols=df.columns
@@ -30,7 +34,7 @@ def index():
     else:
         images=sorted(os.listdir(SAVE_DIR))[-1]
 
-    return render_template('index.html',showcols=showcols,uploadfile=app.config['UPLOAD_FILE'],images=images)
+    return render_template('index.html',showcols=app.config['SELECT_COLS'],uploadfile=app.config['UPLOAD_FILE'],images=images,tables=[result_table.to_html(classes='data')])
 
 #データをアップロードした時の処理
 @app.route('/upload',methods=['POST','GET'])
@@ -41,16 +45,14 @@ def upload():
     #ファイルを保存
     global df
     df=pd.read_csv(csvdata) #列を読み込むだけ
-    showcols.extend(list(df.columns))
+    app.config['SELECT_COLS'] = list(df.columns)
     return redirect('/')
-    #raise render_template('index.html',showcols="bbb")
 
 @app.route('/selectcol',methods=['GET', 'POST'])
 def selectcol():
     col = request.form.get('datacolumns')
-    #print(col)
-    #print(df.shape)
-    distributions=[st.norm,st.gamma,st.rayleigh,st.uniform,]
+    usedists = request.form.getlist("dist")
+    distributions=[dist_d[i] for i in usedists]
 
     result=[]
     for distribution in distributions:
@@ -72,6 +74,13 @@ def selectcol():
         #print(result)
         
         #savefig
+
+    global result_table
+    result_table=pd.DataFrame()
+    result_table["name"]=usedists
+    result_table["sse"]=[i[1] for i in result]
+    result_table.sort_values(by="sse",inplace=True)
+
     plt.figure()
     for i in range(len(result)):
         pd.Series(result[i][0], x).plot(label=distributions[i].name)
@@ -80,47 +89,9 @@ def selectcol():
     plt.legend()
     dt_now = datetime.now().strftime("%Y%m%d%_H%M%S")
     plt.savefig(f"{SAVE_DIR}/{dt_now}.png")
+    #plt.savefig(f"{SAVE_DIR}/hist.png")
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.debug = True # デバッグモード有効化
     app.run(host='0.0.0.0') # どこからでもアクセス可能に
-
-"""
-#データ列を選択した時の画像表示処理
-@app.route('/selectcol',methods=['GET', 'POST'])
-def selectcol():
-    select = request.form.get('datacolumns')
-    #return(str(select)) 
-    return render_template('index.html',showcols=showcols)
-"""
-"""
-
-
-@app.route('/data')
-def data():
-    return render_template_string('showdata.html', table=df.to_html(header='true'))
-
-
-
-# /post にアクセスしたときの処理
-@app.route('/post', methods=['GET', 'POST'])
-def post():
-    title = "こんにちは"
-    if request.method == 'POST':
-        # リクエストフォームから「名前」を取得して
-        name = request.form['name']
-        # index.html をレンダリングする
-        return render_template('index.html',
-                               name=name, title=title)
-    else:
-        # エラーなどでリダイレクトしたい場合はこんな感じで
-        return redirect(url_for('index'))
- 
-
-
-if __name__ == '__main__':
-    app.debug = True # デバッグモード有効化
-    app.run(host='0.0.0.0') # どこからでもアクセス可能に
-
-"""
