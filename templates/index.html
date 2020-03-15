@@ -19,10 +19,10 @@
       </select>
       <p>使用する分布を選択してください</p>
       <input type="checkbox" name="dist" value="norm" checked="checked">norm
-      <input type="checkbox" name="dist" value="gamma">gamma
-      <input type="checkbox" name="dist" value="rayleigh">rayleigh
-      <input type="checkbox" name="dist" value="beta">beta
-      <input type="checkbox" name="dist" value="chi2">chi2
+      <input type="checkbox" name="dist" value="gamma" checked="checked">gamma
+      <input type="checkbox" name="dist" value="rayleigh" checked="checked">rayleigh
+      <input type="checkbox" name="dist" value="beta" checked="checked">beta
+      <input type="checkbox" name="dist" value="chi2" checked="checked">chi2
 
       <button type="submit" class="btn btn-default">Go</button>
   </form>
@@ -40,17 +40,5 @@
     {% endfor %}
     </div>
 {% endif %}   
-
-
-<!--
-{% if images %}
-  {% for path in images %}
-    <div>
-      <img src="/static/{{ path }}">
-      {{ path }}
-    </div>
-  {% endfor %}
-{% endif %}   
-  -->
 
 {% endblock %}

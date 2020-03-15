@@ -1,3 +1,4 @@
 sampledata/
-static/
+static/*
 .DS_Store
+!.gitkeep
