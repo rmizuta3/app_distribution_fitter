@@ -1,4 +1,4 @@
-sampledata/
-static/*
+flask/sampledata/
+flask/static/*
 .DS_Store
 !.gitkeep

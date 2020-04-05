@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, render_template_string,send_from_directory,abort,session
+from flask import Flask, render_template, request, redirect, url_for, render_template_string,send_from_directory,abort,session,jsonify
 import numpy as np
 import pandas as pd
 import scipy.stats as st
 import matplotlib.pyplot as plt
 import os
+import io
 from datetime import datetime
 import matplotlib
 matplotlib.use('Agg') #これを入れないとエラー
@@ -17,7 +18,8 @@ dist_d["beta"]=st.beta
 dist_d["chi2"]=st.chi2
 
 app = Flask(__name__)
-app.secret_key = 'testtest'
+#app.secret_key = 'testtest'
+app.secret_key = os.urandom(24)
 SAVE_DIR='./static'
 
 @app.route('/')
@@ -29,7 +31,12 @@ def index():
 def upload():
     csvdata = request.files['csvfile']
     session["UPLOAD_FILE"] = csvdata.filename
-    
+    #print(jsonify(csvdata.stream))
+    #保存できる形式に変換「
+    savecsv=io.TextIOWrapper(csvdata.stream, encoding='cp932')
+    print(savecsv)
+    session["UPLOAD_DATA"] = jsonify(csvdata.stream)
+
     global df
     df=pd.read_csv(csvdata)
     session["SELECT_COLS"] = list(df.columns)
