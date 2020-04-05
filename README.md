@@ -6,5 +6,11 @@
 https://rmizutaa.hatenablog.com/entry/2020/02/24/191312
 
 # 使い方
-```python app.py```を実行して
+
+## flask
+```python flask/app.py```を実行して
 localhost:5000にアクセス
+
+## streamlit
+```streamlit run streamlit/app.py```を実行して
+localhost:8501にアクセス
